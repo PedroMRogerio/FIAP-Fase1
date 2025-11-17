@@ -3,6 +3,7 @@ import json
 from flask import Flask, jsonify, request
 from flask_httpauth import HTTPBasicAuth
 from flasgger import Swagger
+from bs4 import BeautifulSoup
 
 app = Flask(__name__)
 
@@ -62,6 +63,37 @@ def delete_item(item_id):
         return jsonify(removed)
     return jsonify({"error": "Item not found"}), 404
 
+def get_title(url):
+    try:
+        response = requests.get(url)
+        soup = BeautifulSoup(response.text, "html.parser")
+        title = soup.title.string.strip()
+        return jsonify({"Title": title})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/scrape/title", methods=["GET"])
+@auth.login_required
+def scrape_title():
+    """
+    Extração do título do site através da URL.
+    ---
+    segurança:
+     - BasicAuth: []
+    parâmetros:
+     - name: URL
+       in: query
+       type: string
+       required: true 
+       description: URL do site
+    responses
+     200:
+        description: Título do site
+    """
+    url - request.args.get("url")
+    if not url:
+        return jsonify({"error:" "URL is required"}), 400
+    return get_title(url)
 
 if __name__ == "__main__":
     app.run(debug=True)
