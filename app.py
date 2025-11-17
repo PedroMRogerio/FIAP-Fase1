@@ -2,15 +2,23 @@ import json
 
 from flask import Flask, jsonify, request
 from flask_httpauth import HTTPBasicAuth
+from flasgger import Swagger
 
 app = Flask(__name__)
+
+app.config["SWAGGER"] = {
+    "title": "API Fase 1",
+    "uiversion": 3
+}
+
+swagger = Swagger(app)
 
 auth = HTTPBasicAuth()
 
 users = {
     "user1": "password1",
     "user2": "password2"
-} 
+}
 
 @auth.verify_password
 def verify_password(username, password):
