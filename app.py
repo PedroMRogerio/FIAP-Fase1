@@ -77,7 +77,7 @@ def get_title(url):
 @auth.login_required
 def scrape_title():
     """
-    Extração do título do site através da URL.
+    Extract the title of a web page provided by the URL.
     ---
     security:
      - BasicAuth: []
@@ -86,10 +86,10 @@ def scrape_title():
        in: query
        type: string
        required: true
-       description: URL do site
+       description: URL of the web page
     responses:
      200:
-        description: Título do site
+        description: Web apage title
     """
     url = request.args.get("url")
     if not url:
