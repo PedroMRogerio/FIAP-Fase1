@@ -1,4 +1,5 @@
 import json
+import requests
 
 from flask import Flask, jsonify, request
 from flask_httpauth import HTTPBasicAuth
@@ -78,21 +79,21 @@ def scrape_title():
     """
     Extração do título do site através da URL.
     ---
-    segurança:
+    security:
      - BasicAuth: []
-    parâmetros:
-     - name: URL
+    parameters:
+     - name: url
        in: query
        type: string
-       required: true 
+       required: true
        description: URL do site
-    responses
+    responses:
      200:
         description: Título do site
     """
-    url - request.args.get("url")
+    url = request.args.get("url")
     if not url:
-        return jsonify({"error:" "URL is required"}), 400
+        return jsonify({"error": "URL is required"}), 400
     return get_title(url)
 
 if __name__ == "__main__":
