@@ -1,7 +1,7 @@
 from flasgger import Swagger
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
-from flask_jwt_extended import JWTManager, create_access_token
+from flask_jwt_extended import JWTManager, create_access_token, get_jwt_identity, jwt_required
 
 import config
 
@@ -86,6 +86,12 @@ def login():
         token = create_access_token(identity=str(user.id))
         return jsonify({'access_token': token}), 200
     return jsonify({'error': 'Invalid credentials'}), 401     
+
+@app.route('/protected', methods=['GET'])
+@jwt_required()
+def protected():
+    current_user_id = get_jwt_identity()
+    return jsonify({'msg': f'Usuário com ID {current_user_id} acessou a rota protegida.'}), 200
 
 if __name__ == "__main__":
     app.run(debug=True)
