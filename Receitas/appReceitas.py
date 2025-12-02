@@ -1,7 +1,7 @@
 from flasgger import Swagger
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
-from flask_jwt_extended import JWTManager
+from flask_jwt_extended import JWTManager, create_access_token
 
 import config
 
@@ -57,8 +57,38 @@ def register_user():
     db.session.commit()
     return jsonify({'msg': 'User created'}), 201     
   
+@app.route('/login', methods=['POST'])
+def login():
+    """
+    Faz login do usuário e retorna um JWT.
+    ---
+    parameters:
+     - in: body
+       name: body
+       required: true
+       schema:
+         type: object
+         properties:
+           username:
+             type: string
+           password: 
+             type: string
+    responses:
+      201:
+        description: Login realizado com sucesso, retorna JWT
+      400:
+        description: Credenciais inválidas 
+    """
+    data = request.get_json()
+    user = User.query.filter_by(username=data['username']).first()
+    if user and user.password == data['password']:
+        # Converte o ID para string
+        token = create_access_token(identity=str(user.id))
+        return jsonify({'access_token': token}), 200
+    return jsonify({'error': 'Invalid credentials'}), 401     
+
 if __name__ == "__main__":
-    #app.run(debug=True)
+    app.run(debug=True)
     with app.app_context():
         db.create_all()
         print('Branco de dados criado!')
